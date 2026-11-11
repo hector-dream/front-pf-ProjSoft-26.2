@@ -9,7 +9,7 @@ const domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
 const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 const configurado = domain && clientId && !clientId.startsWith('COLE_') && audience
-  && import.meta.env.VITE_API_URL;
+  && (import.meta.env.PROD || import.meta.env.VITE_API_URL);
 
 createRoot(document.getElementById('root')).render(
   configurado ? (
@@ -27,7 +27,10 @@ createRoot(document.getElementById('root')).render(
   ) : (
     <main>
       <h1>Avaliações</h1>
-      <p>Configure o arquivo .env.local conforme o .env.example e reinicie o servidor.</p>
+      <p>A configuração da aplicação está incompleta.</p>
+      <p>{import.meta.env.DEV
+        ? 'Preencha as variáveis do .env.local conforme o .env.example e reinicie o servidor.'
+        : 'Configure as variáveis VITE_AUTH0_DOMAIN, VITE_AUTH0_CLIENT_ID e VITE_AUTH0_AUDIENCE no painel da Vercel e faça um novo deploy.'}</p>
     </main>
   ),
 );

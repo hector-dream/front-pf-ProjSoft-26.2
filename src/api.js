@@ -1,4 +1,6 @@
-const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+// Na Vercel, /api é encaminhado à AWS pelo vercel.json, sem HTTP direto no navegador.
+// Localmente, VITE_API_URL continua apontando para o Java (localhost ou AWS).
+const baseUrl = (import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || '')).replace(/\/$/, '');
 
 // Centraliza o envio do access token. Todas as rotas Java exigem Bearer token.
 // getAccessTokenSilently é fornecido pelo SDK e cuida de obter/renovar o token.

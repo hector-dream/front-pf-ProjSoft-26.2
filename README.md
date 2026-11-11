@@ -18,7 +18,7 @@ O comando `Copy-Item` apenas cria essa cópia, dentro da pasta do front. Se `.en
 já existir, não precisa copiar de novo: abra-o e troque somente
 `COLE_O_CLIENT_ID_DA_SPA` pelo Client ID. Domínio, audience e claims já estão alinhados
 com o backend. `http://localhost:8080` é a URL correta para executar o Java localmente;
-para usar a AWS será necessário preencher a URL pública real.
+para usar a AWS no desenvolvimento, use `http://44.220.88.212:8080`.
 
 ```powershell
 npm.cmd install
@@ -38,26 +38,39 @@ Variáveis de `.env.local`:
 | `VITE_AUTH0_CLIENT_ID` | Client ID de Applications → Applications → sua SPA |
 | `VITE_AUTH0_AUDIENCE` | `https://prova-api` |
 | `VITE_AUTH0_ROLES_CLAIM` | `https://prova-api/roles` |
-| `VITE_API_URL` | `http://localhost:8080` localmente; URL HTTPS pública do Java no deploy |
+| `VITE_API_URL` | Só no desenvolvimento: `http://localhost:8080` ou `http://44.220.88.212:8080`. Em produção, o código usa `/api`. |
 
 Reinicie o Vite depois de mudar variáveis. Elas entram no bundle durante o build.
 Client ID e domínio são configurações públicas. Não coloque Client Secret, senhas,
 tokens de acesso ou chaves AWS em variáveis `VITE_*`. `.env.local` está no `.gitignore`.
 
-## O que ainda preciso para concluir e verificar o deploy
+## Integração publicada: Vercel → AWS
 
-- Client ID da SPA em texto, para preencher sem erro de transcrição.
-- Endereço público do backend: IPv4 público ou domínio. `172.31.2.70` é um IP **privado**,
-  não serve como URL pública. Na EC2: Instances → selecione a instância → Networking
-  (ou Details) → **Public IPv4 address / Public IPv4 DNS**. Não envie a chave privada SSH.
-- URL HTTPS pública do backend (ou configurar domínio e certificado no proxy da AWS).
-  Um front HTTPS na Vercel não deve chamar `http://IP:8080`: o navegador bloqueia mixed content.
-- Criar/importar o projeto do front na Vercel. Depois, precisamos da URL de produção
-  para configurar Auth0 e CORS. Ainda não foi feito deploy deste front.
-- Confirmar que os secrets do repositório Java já estão configurados e que o workflow
-  conclui na aba Actions. Não é necessário me enviar os valores secretos.
-- Conferir o código da Action Post Login antiga e os papéis dos usuários; ainda não
-  foi possível testar o fluxo com login real.
+Front: `https://front-pf-projsoft-262.vercel.app`.
+Java: `http://44.220.88.212:8080` (testado: responde 401 sem token).
+O login já funcionou, conforme verificado pelo usuário.
+
+Em produção, `src/api.js` usa `/api`, independentemente de `VITE_API_URL`.
+O `vercel.json` encaminha `/api/:path*` para `http://44.220.88.212:8080/:path*`.
+Exemplo: o navegador chama `https://front-pf-projsoft-262.vercel.app/api/avaliacoes`
+e a Vercel encaminha ao Java como `/avaliacoes`, preservando o método e o token.
+O navegador só chama HTTPS no próprio domínio, evitando mixed content.
+O trecho Vercel → AWS ainda usa HTTP; para criptografia nesse trecho também,
+configure HTTPS no backend e altere o destination do rewrite.
+Se o IP da EC2 mudar, atualize o destination em `vercel.json` e publique novamente.
+
+Para ativar esta correção:
+
+1. Envie as mudanças do backend para disparar o GitHub Actions.
+2. Se existir a Variable `CORS_ALLOWED_ORIGINS` no GitHub, inclua
+   `https://front-pf-projsoft-262.vercel.app` nela, pois sobrescreve o padrão do código.
+   O teste remoto antes da correção retornou `403 Invalid CORS request` para essa origem.
+3. Envie as mudanças do front para gerar outro deploy na Vercel. Não é preciso preencher
+   a URL HTTP da AWS em `VITE_API_URL` na Vercel: o código de produção usa `/api`.
+4. Abra o site e confira a listagem; teste cadastro, status e exclusão com ADMIN.
+
+Sem acesso autenticado aos painéis/SSH, a publicação dessas alterações deve ser
+feita pelo usuário. Os arquivos locais já estão preparados.
 
 ## Auth0
 
@@ -101,9 +114,9 @@ confirme os secrets existentes:
 | `KEY_TEST` | Chave SSH privada do usuário ubuntu (somente no GitHub Secrets) |
 
 Crie também a **Variable** (aba Variables, não é um secret) `CORS_ALLOWED_ORIGINS`
-com `http://localhost:5173,https://SEU-PROJETO.vercel.app` (substitua pela URL real,
-sem barra final). O workflow passa esse valor ao Java. Enquanto ela não for definida,
-ele libera somente as origens locais padrão.
+com `http://localhost:5173,https://front-pf-projsoft-262.vercel.app` (sem barra final).
+O workflow passa esse valor ao Java. Sem essa Variable, o padrão já inclui essa
+origem de produção e as origens locais.
 
 A rede Docker `rede` e o PostgreSQL `postgres-aula`, banco `auladb`, precisam existir
 na EC2, como no deploy original. Credenciais padrão do banco são as do application.properties;
@@ -113,7 +126,7 @@ O issuer e a audience já têm defaults corretos no application.properties.
 Envie as mudanças do backend à branch `master` para disparar o workflow ou use
 Actions → Java CI with Maven → Run workflow. Confira todos os passos, inclusive o SSH.
 A publicação depende do acesso aos repositórios/serviços; preparar os arquivos localmente
-não executa o deploy. Publique o backend em HTTPS antes de apontar o front de produção.
+não executa o deploy. O front usa o encaminhamento da Vercel descrito acima.
 
 ## Primeiro deploy do front na Vercel
 
@@ -121,15 +134,15 @@ não executa o deploy. Publique o backend em HTTPS antes de apontar o front de p
 2. Entre na Vercel → Add New → Project → importe esse repositório.
 3. Framework: Vite. Root Directory: raiz do repositório (`.`).
 4. Build Command: `npm run build`. Output Directory: `dist`. Use Node.js 22.12+.
-5. Em Environment Variables, adicione as cinco variáveis da tabela acima,
-   com a URL HTTPS pública do Java em `VITE_API_URL`. Não use localhost no deploy.
+5. Em Environment Variables, adicione as variáveis Auth0 da tabela acima.
+   `VITE_API_URL` não é usada em produção: as chamadas vão para `/api` pelo rewrite.
 6. Faça Deploy. Copie a origem de produção `https://SEU-PROJETO.vercel.app`.
 7. Adicione essa origem aos três campos de URLs do Auth0 e à Variable
    `CORS_ALLOWED_ORIGINS` do repositório Java. Dispare novamente o deploy do backend.
 8. Se mudar variáveis na Vercel, faça Redeploy: Vite incorpora os valores no build.
 
-O arquivo `vercel.json` já configura Vite e `dist`. Como há uma tela só, sem React Router,
-não é necessário configurar rotas adicionais ou rewrite de SPA.
+O arquivo `vercel.json` configura Vite, `dist`, o encaminhamento de `/api` para a AWS
+e `Cache-Control: no-store` para essas respostas autenticadas. Não há React Router.
 
 ## Onde estudar e como adaptar na prova
 
