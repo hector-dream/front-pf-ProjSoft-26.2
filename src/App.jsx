@@ -109,7 +109,7 @@ export default function App() {
               <form onSubmit={cadastrar}>
                 <fieldset disabled={salvando}>
                   <label>Título
-                    <input type="email" required maxLength={255} value={formulario.emailAvaliado}
+                    <input type="titulo" required maxLength={255} value={formulario.emailAvaliado}
                       onChange={e => setFormulario({ ...formulario, emailAvaliado: e.target.value })} />
                   </label>
                   <label>Descrição
