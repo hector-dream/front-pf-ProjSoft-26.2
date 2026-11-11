@@ -20,7 +20,7 @@ export default function App() {
   const carregar = useCallback(async () => {
     setCarregando(true);
     try {
-      setAvaliacoes(await chamarApi(getAccessTokenSilently, '/avaliacoes'));
+      setAvaliacoes(await chamarApi(getAccessTokenSilently, '/artigos'));
     } finally {
       setCarregando(false);
     }
@@ -65,23 +65,25 @@ export default function App() {
     event.preventDefault();
     executar(async () => {
       // ID, e-mail do avaliador, data e status inicial são definidos pelo backend.
-      await chamarApi(getAccessTokenSilently, '/avaliacoes', 'POST', {
+      await chamarApi(getAccessTokenSilently, '/artigos', 'POST', {
         ...formulario, nota: Number(formulario.nota),
       });
       setFormulario(formularioVazio);
-    }, 'Avaliação cadastrada.');
+    // FILA: ao ativar no Java, troque a mensagem abaixo por
+    // 'Avaliação enviada para processamento. Atualize a lista em instantes.'
+    }, 'Artigo cadastrado.');
   }
 
   function alterarStatus(id, status) {
     // Para outro campo editável: crie a rota/DTO no Java e envie seu JSON aqui.
-    executar(() => chamarApi(getAccessTokenSilently, `/avaliacoes/${id}/status`, 'PATCH', { status }),
+    executar(() => chamarApi(getAccessTokenSilently, `/artigos/${id}/status`, 'PATCH', { status }),
       'Status atualizado.');
   }
 
   function excluir(id) {
-    if (!window.confirm(`Excluir a avaliação ${id}?`)) return;
+    if (!window.confirm(`Excluir o artigo ${id}?`)) return;
     // O front não muda ao trocar hard delete por soft delete no service Java.
-    executar(() => chamarApi(getAccessTokenSilently, `/avaliacoes/${id}`, 'DELETE'), 'Avaliação excluída.');
+    executar(() => chamarApi(getAccessTokenSilently, `/artigos/${id}`, 'DELETE'), 'Artigo excluído.');
   }
 
   if (isLoading) return <main><p>Carregando autenticação...</p></main>;
@@ -151,8 +153,8 @@ export default function App() {
                         <td>{avaliacao.status}</td>
                         {admin && <td>
                           <button disabled={salvando} onClick={() => alterarStatus(avaliacao.id,
-                            avaliacao.status === 'PENDENTE' ? 'VISTO' : 'PENDENTE')}>
-                            Marcar como {avaliacao.status === 'PENDENTE' ? 'VISTO' : 'PENDENTE'}
+                            avaliacao.status === 'MINIMA' ? 'MAXIMA' : 'MINIMA')}>
+                            Marcar como {avaliacao.status === 'MINIMA' ? 'MAXIMA' : 'MINIMA'}
                           </button>
                           <button disabled={salvando} onClick={() => excluir(avaliacao.id)}>Excluir</button>
                         </td>}
