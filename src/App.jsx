@@ -108,11 +108,11 @@ export default function App() {
               <h2>Cadastrar artigo</h2>
               <form onSubmit={cadastrar}>
                 <fieldset disabled={salvando}>
-                  <label>E-mail do avaliado
+                  <label>Título
                     <input type="email" required maxLength={255} value={formulario.emailAvaliado}
                       onChange={e => setFormulario({ ...formulario, emailAvaliado: e.target.value })} />
                   </label>
-                  <label>Comentários
+                  <label>Descrição
                     <textarea required maxLength={4000} value={formulario.comentarios}
                       onChange={e => setFormulario({ ...formulario, comentarios: e.target.value })} />
                   </label>
@@ -137,7 +137,7 @@ export default function App() {
                 <div className="tabela">
                   <table>
                     <thead><tr>
-                      <th>ID</th><th>Avaliador</th><th>Avaliado</th><th>Comentários</th>
+                      <th>ID</th><th>Criador</th><th>Título</th><th>Descrição</th>
                       <th>Nota</th><th>Data</th><th>Status</th>{admin && <th>Ações</th>}
                     </tr></thead>
                     <tbody>{avaliacoes.map(avaliacao => (
