@@ -138,7 +138,7 @@ export default function App() {
                   <table>
                     <thead><tr>
                       <th>ID</th><th>Criador</th><th>Título</th><th>Descrição</th>
-                      <th>Nota</th><th>Data</th><th>Status</th>{admin && <th>Ações</th>}
+                      <th>Nota</th><th>Data</th><th>Prioridade</th>{admin && <th>Ações</th>}
                     </tr></thead>
                     <tbody>{avaliacoes.map(avaliacao => (
                       <tr key={avaliacao.id}>
