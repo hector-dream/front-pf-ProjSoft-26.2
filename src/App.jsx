@@ -69,8 +69,6 @@ export default function App() {
         ...formulario, nota: Number(formulario.nota),
       });
       setFormulario(formularioVazio);
-    // FILA: ao ativar no Java, troque a mensagem abaixo por
-    // 'Avaliação enviada para processamento. Atualize a lista em instantes.'
     }, 'Artigo cadastrado.');
   }
 
@@ -90,13 +88,13 @@ export default function App() {
 
   return (
     <main>
-      <h1>Avaliações</h1>
+      <h1>Artigos</h1>
       {(error || erro) && <p role="alert">{error?.message || erro}</p>}
       {mensagem && <p role="status">{mensagem}</p>}
 
       {!isAuthenticated ? (
         <>
-          <p>Entre para consultar as avaliações.</p>
+          <p>Entre para consultar os artigos da nossa empresa!</p>
           <button onClick={() => loginWithRedirect().catch(e => setErro(e.message))}>Entrar com Auth0</button>
         </>
       ) : (
@@ -129,12 +127,12 @@ export default function App() {
           )}
 
           <section>
-            <h2>Lista de avaliações</h2>
+            <h2>Lista de Artigos</h2>
             <button disabled={carregando || salvando} onClick={() => {
               setErro('');
               carregar().catch(e => setErro(e.message));
             }}>Atualizar lista</button>
-            {carregando ? <p>Carregando avaliações...</p> : (
+            {carregando ? <p>Carregando artigos...</p> : (
               avaliacoes.length === 0 ? <p>Nenhum artigo para mostrar.</p> : (
                 <div className="tabela">
                   <table>

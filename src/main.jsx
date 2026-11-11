@@ -26,7 +26,7 @@ createRoot(document.getElementById('root')).render(
     </Auth0Provider>
   ) : (
     <main>
-      <h1>Avaliações</h1>
+      <h1>Artigos</h1>
       <p>A configuração da aplicação está incompleta.</p>
       <p>{import.meta.env.DEV
         ? 'Preencha as variáveis do .env.local conforme o .env.example e reinicie o servidor.'
