@@ -26,7 +26,7 @@ export async function chamarApi(getAccessTokenSilently, caminho, metodo = 'GET',
   if (!resposta.ok) {
     if (resposta.status === 401) throw new Error('Token inválido ou expirado. Saia e entre novamente.');
     if (resposta.status === 403) throw new Error('Acesso negado. Confira o papel do usuário e os claims da Action no Auth0.');
-    if (resposta.status === 404) throw new Error('Avaliação não encontrada. Atualize a lista.');
+    if (resposta.status === 404) throw new Error('Artigo não encontrado. Atualize a lista.');
     const campos = corpo?.erros ? Object.entries(corpo.erros).map(([campo, erro]) => `${campo}: ${erro}`).join('; ') : '';
     throw new Error(campos || corpo?.detail || `Erro na API (${resposta.status}).`);
   }

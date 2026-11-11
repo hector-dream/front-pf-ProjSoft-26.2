@@ -107,7 +107,7 @@ export default function App() {
           {/* ADMIN vê o formulário e ações. USER vê somente a listagem. */}
           {admin && (
             <section>
-              <h2>Cadastrar avaliação</h2>
+              <h2>Cadastrar artigo</h2>
               <form onSubmit={cadastrar}>
                 <fieldset disabled={salvando}>
                   <label>E-mail do avaliado
@@ -135,7 +135,7 @@ export default function App() {
               carregar().catch(e => setErro(e.message));
             }}>Atualizar lista</button>
             {carregando ? <p>Carregando avaliações...</p> : (
-              avaliacoes.length === 0 ? <p>Nenhuma avaliação para mostrar.</p> : (
+              avaliacoes.length === 0 ? <p>Nenhum artigo para mostrar.</p> : (
                 <div className="tabela">
                   <table>
                     <thead><tr>
