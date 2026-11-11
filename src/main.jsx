@@ -1,0 +1,33 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { Auth0Provider } from '@auth0/auth0-react';
+import App from './App';
+import './style.css';
+
+// Vite lê variáveis VITE_* durante o build. Nunca coloque Client Secret aqui.
+const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+const configurado = domain && clientId && !clientId.startsWith('COLE_') && audience
+  && import.meta.env.VITE_API_URL;
+
+createRoot(document.getElementById('root')).render(
+  configurado ? (
+    <Auth0Provider
+      domain={domain}
+      clientId={clientId}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience,
+        scope: 'openid profile email',
+      }}
+    >
+      <App />
+    </Auth0Provider>
+  ) : (
+    <main>
+      <h1>Avaliações</h1>
+      <p>Configure o arquivo .env.local conforme o .env.example e reinicie o servidor.</p>
+    </main>
+  ),
+);

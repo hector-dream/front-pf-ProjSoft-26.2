@@ -1,0 +1,15 @@
+body { font-family: Arial, sans-serif; margin: 0; color: #222; }
+main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+section { margin-top: 28px; }
+fieldset { border: 0; padding: 0; }
+label { display: block; margin: 12px 0; }
+input, textarea { display: block; box-sizing: border-box; width: 100%; max-width: 450px; padding: 8px; margin-top: 4px; }
+textarea { min-height: 80px; }
+button { cursor: pointer; padding: 7px 10px; margin: 4px 6px 4px 0; }
+button:disabled { cursor: wait; }
+.tabela { overflow-x: auto; margin-top: 12px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
+.comentarios { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 160px; }
+[role="alert"] { color: #a00; }
+[role="status"] { color: #175c27; }
